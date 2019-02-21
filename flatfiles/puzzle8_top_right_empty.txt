@@ -17,3 +17,43 @@ fact: (pred obj1 obj2)
 rule: ((pred obj1 obj2) (pred obj2 obj3)) -> (pred obj1 obj3)
 
 """
+
+fact: (inst tile1 tile)
+fact: (inst tile2 tile)
+fact: (inst tile3 tile)
+fact: (inst tile4 tile)
+fact: (inst tile5 tile)
+fact: (inst tile6 tile)
+fact: (inst tile7 tile)
+fact: (inst tile8 tile)
+
+fact: (pos tile5 pos1 pos1)
+fact: (pos tile6 pos1 pos2)
+fact: (pos tile7 pos1 pos3)
+fact: (pos tile4 pos2 pos1)
+fact: (pos tile1 pos2 pos2)
+fact: (pos tile3 pos2 pos3)
+fact: (pos tile8 pos3 pos2)
+fact: (pos tile2 pos3 pos3)
+
+fact: (inst empty empty)
+fact: (pos empty pos3 pos1)
+
+
+fact: (adjacent tile5 tile4)
+fact: (adjacent tile5 tile6)
+fact: (adjacent tile6 tile1)
+fact: (adjacent tile6 tile7)
+fact: (adjacent tile7 tile3)
+fact: (adjacent tile3 tile2)
+fact: (adjacent tile3 tile1)
+fact: (adjacent tile1 tile8)
+fact: (adjacent tile1 tile4)
+fact: (adjacent tile4 empty)
+fact: (adjacent empty tile8)
+fact: (adjacent tile8 tile2)
+
+
+rule: ((adjacent ?x ?y)) -> (adjacent ?y ?x)
+
+rule: ((adjacent ?x ?y) (inst ?empty ?y) (pos ?x ?j ?k) (pos ?y ?r ?s) -> (movable ?x ?j ?k ?r ?s))
