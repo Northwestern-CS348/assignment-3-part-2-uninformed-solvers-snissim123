@@ -104,30 +104,34 @@ class SolverBFS(UninformedSolver):
         # go through each possible move
         for move in possMoves:
             self.gm.makeMove(move)
+
             gameState = GameState(self.gm.getGameState(), self.currentState.depth + 1, move)
-            gameState.parent = self.currentState
 
             if gameState not in self.visited:
+
                 self.currentState.children.append(gameState)
                 self.visited[gameState] = False
                 self.myQueue.append(gameState)
                 
                 self.myList[gameState] = []
+
                 for elem in self.myList[self.currentState]:
                     self.myList[gameState].append(elem)
+                    
                 self.myList[gameState].append(gameState)
                 
             self.gm.reverseMove(move)
 
         # Find list of moves before
-        before = self.myList[self.currentState]
-        before.reverse()
+        ind = len(self.myList[self.currentState])
+
+        for i in range(ind):
+            self.gm.reverseMove(self.myList[self.currentState][ind - i - 1].requiredMovable)
+
         self.currentState = self.myQueue.popleft()
-        # undo those moves
-        for move in before: 
-            self.gm.reverseMove(move.requiredMovable)
-        after = self.myList[self.currentState]
-        for move in after: 
+
+
+        for move in self.myList[self.currentState]: 
             self.gm.makeMove(move.requiredMovable)
 
         return False

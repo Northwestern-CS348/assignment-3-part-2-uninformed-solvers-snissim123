@@ -21,48 +21,26 @@ rule: ((pred obj1 obj2) (pred obj2 obj3)) -> (pred obj1 obj3)
 
 """
 
-fact: (inst base1 base)
-fact: (inst base2 base)
-fact: (inst base3 base)
-
-fact: (inst peg1 peg)
-fact: (inst peg2 peg)
-fact: (inst peg3 peg)
-
-fact: (inst disk1 disk)
-fact: (inst disk2 disk)
-fact: (inst disk3 disk)
-fact: (inst disk4 disk)
-fact: (inst disk5 disk)
-
 fact: (on disk1 peg3)
 fact: (on disk2 peg2)
 fact: (on disk3 peg1)
 fact: (on disk4 peg1)
 fact: (on disk5 peg1)
 
-fact: (top disk1 peg3)
-fact: (top disk2 peg2)
+fact: (onTopOf disk3 disk4)
+fact: (onTopOf disk4 disk5)
+
 fact: (top disk3 peg1)
+fact: (top disk2 peg2)
+fact: (top disk1 peg3)
 
-fact: (topOf disk1 base3)
-fact: (topOf disk2 base2)
-fact: (topOf disk3 disk4)
-fact: (topOf disk4 disk5)
-fact: (topOf disk5 base1)
+fact: (lessThan disk1 disk2)
+fact: (lessThan disk2 disk3)
+fact: (lessThan disk3 disk4)
+fact: (lessThan disk4 disk5)
 
-fact: (larger disk2 disk1)
-fact: (larger disk3 disk2)
-fact: (larger disk4 disk3)
-fact: (larger disk5 disk2)
+rule: ((lessThan ?disk_a ?disk_b) (lessThan ?disk_b ?disk_c)) -> (lessThan ?disk_a ?disk_c)
 
-rule: ((inst ?x disk) (inst ?y disk) (larger ?y ?x) (top ?x ?z) (top ?y ?w)) -> (movable ?x ?z ?w)
+rule: ((top ?disk_a ?peg_a) (top ?disk_b ?peg_b) (lessThan ?disk_a ?disk_b)) -> (movable ?disk_a ?peg_a ?peg_b)
 
-
-rule: ((inst ?x disk) (empty ?y) (top ?x ?z) ) -> (movable ?x ?z ?y)
-
-rule: ((on ?x ?y) (on ?y ?z)) -> (larger ?z ?x)
-
-rule: ((larger ?x ?y) (larger ?y ?z)) -> (larger ?x ?z)
-
-rule: ((inst ?x base) (top ?x ?y)) -> (empty ?y)
+rule: ((top ?disk_a ?peg_a) (empty ?peg_b)) -> (movable ?disk_a ?peg_a ?peg_b

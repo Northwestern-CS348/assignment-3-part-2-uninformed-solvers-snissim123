@@ -63,21 +63,35 @@ class TowerOfHanoiGame(GameMaster):
             None
         """
         ### Student code goes here
+
         stateTerms = movable_statement.terms
         dstPeg = stateTerms[2]
         srcPeg = stateTerms[1]
         disk = stateTerms[0]
 
+        newTop = self.kb.kb_ask(Fact(["onTopOf", disk, "?disk"]))
         self.kb.kb_retract(Fact(["top", disk, srcPeg]))
         self.kb.kb_retract(Fact(["on", disk, srcPeg]))
-        newTop = str(self.kb.kb_ask(Fact(["topOf", disk, "?disk"]))[0].bindings[0].constant)
-        self.kb.kb_assert(Fact(["top", newTop, srcPeg]))
+        if newTop:
+            newTop = newTop[0].bindings[0].constant
+            self.kb.kb_retract(Fact(["onTopOf", disk, newTop]))
+            self.kb.kb_assert(Fact(["top", newTop, srcPeg]))
+            
+        else:
+            self.kb.kb_assert(Fact(["empty", srcPeg]))
+
+        if not self.kb.kb_ask(Fact(["empty", dstPeg])):
+            oldTop = self.kb.kb_ask(Fact(["top", "?disk", dstPeg]))[0].bindings[0].constant
+            self.kb.kb_retract(Fact(["top", oldTop, dstPeg]))
+            self.kb.kb_assert(Fact(["onTopOf", disk, oldTop]))
+
+        # if dst was empty       
+        else:
+            self.kb.kb_retract(Fact(["empty", dstPeg]))
+
         self.kb.kb_assert(Fact(["on", disk, dstPeg]))
-        self.kb.kb_retract(Fact(["topOf", disk, newTop]))
-        oldTop = str(self.kb.kb_ask(Fact(["top", "?disk", dstPeg]))[0].bindings[0].constant)
-        self.kb.kb_assert(Fact(["topOf", disk, oldTop]))
-        self.kb.kb_retract(Fact(["top", oldTop, dstPeg]))
         self.kb.kb_assert(Fact(["top", disk, dstPeg]))
+
 
     def reverseMove(self, movable_statement):
         """
@@ -125,7 +139,7 @@ class Puzzle8Game(GameMaster):
         ### Student code goes here
 
         myList = [[0, 0, 0], [0, 0,0], [0, 0,0]]
-        allTiles = self.kb.kb_ask(parse_input("fact: (pos ?tile ?posx ?posy)"))
+        allTiles = self.kb.kb_ask(parse_input("fact: (coordinate ?tile ?posx ?posy)"))
         
         for t in allTiles:
             myTile = str(t.bindings_dict["?tile"][4])
@@ -164,19 +178,18 @@ class Puzzle8Game(GameMaster):
             None
         """
         ### Student code goes here
-
         stateTerms = movable_statement.terms
         dstY = stateTerms[4]
         dstX = stateTerms[3]
         srcY = stateTerms[2]
         srcX = stateTerms[1]
         tile = stateTerms[0]
-        if self.kb.kb_ask(Fact(["pos", "?empty", dstX, dstY])):
-            self.kb.kb_retract(Fact(["pos", tile, srcX, srcY]))
+        if self.kb.kb_ask(Fact(["coordinate", "empty", dstX, dstY])):
+            self.kb.kb_retract(Fact(["coordinate", tile, srcX, srcY]))
             # move empty block to previous
-            self.kb.kb_retract(Fact(["pos", "?empty", dstX, dstY]))
-            self.kb.kb_assert(Fact(["pos", tile, dstX, dstY]))
-            self.kb.kb_assert(Fact(["pos", "empty", srcX, srcY]))
+            self.kb.kb_retract(Fact(["coordinate", "empty", dstX, dstY]))
+            self.kb.kb_assert(Fact(["coordinate", tile, dstX, dstY]))
+            self.kb.kb_assert(Fact(["coordinate", "empty", srcX, srcY]))
             
             
 
